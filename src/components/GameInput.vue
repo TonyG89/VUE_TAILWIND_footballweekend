@@ -1,8 +1,10 @@
 <template>
   <div>
     <h2>Результат игры:</h2>
-    <div class="flex justify-center items-center py-3">
-      <div class="text-sm font-bold mx-4 text-center">команда 1:</div>
+    <div class="flex flex-1 justify-center  items-center ">
+      <div class="text-sm font-bold mx-4 text-center w-[100px]">
+        {{ componentsState.teamHost }}
+      </div>
       <select v-model="score">
         <option
           v-for="score in scoreData"
@@ -20,7 +22,9 @@
           {{ score }}
         </option>
       </select>
-      <div class="text-sm font-bold mx-4 text-center">команда 2:</div>
+      <div class="text-sm font-bold mx-4 text-center w-[100px]">
+        {{ componentsState.teamGuest }}
+      </div>
     </div>
     <button @click="onAddMatch">Добавить</button>
   </div>
@@ -28,14 +32,25 @@
 
 <script setup>
 import { computed, reactive, ref } from 'vue';
+import { teamsData, scoreData, teamNames } from '../consts';
 
-const scoreData = ['0:0', '1:0', '0:1', '1:1', '2:1', '1:2', '2:0', '0:2'];
+const componentsState = computed(() => ({
+  teamHost: teamNames[props.teams.teamHost],
+  teamGuest: teamNames[props.teams.teamGuest],
+}));
 
 const score = ref(scoreData[0]);
 
-
 const emit = defineEmits({
   onAddMatch: null,
+});
+
+const props = defineProps({
+  teams: {
+    type: Object,
+    required: true,
+    default: teamsData,
+  },
 });
 
 const onAddMatch = () => {

@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
+import { ref, reactive, watch } from 'vue';
 import { AgGridVue } from 'ag-grid-vue3';
 import 'ag-grid-community/styles/ag-grid.css'; // Core grid CSS, always needed
 import 'ag-grid-community/styles/ag-theme-alpine.css'; // Optional theme CSS
@@ -48,7 +48,8 @@ const defaultColDef = {
 };
 
 rowData.value = Object.values(props.results);
-console.log(rowData.value);
+
+watch(() => props.results, ()=>rowData.value = Object.values(props.results))
 
 const props = defineProps({
   results: {
@@ -56,6 +57,7 @@ const props = defineProps({
     required: true,
   },
 });
+
 </script>
 
 <style scoped></style>

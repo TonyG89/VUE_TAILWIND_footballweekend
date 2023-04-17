@@ -6,7 +6,6 @@
     <li>счет</li>
     <li>команда</li>
     <li>время игры</li>
-    <li class="w-[30px]"></li>
   </ul>
   <div>
     <MatchCard
