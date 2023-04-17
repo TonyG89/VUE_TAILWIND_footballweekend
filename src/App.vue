@@ -99,8 +99,6 @@ const teamPlays = reactive({
 const lastGame = computed(() => ({}));
 
 // WHO WIN WHO LOSE
-const won = ref(null);
-const lose = ref(null);
 
 const whoWinWhoLose = () => {
   // debugger
@@ -118,11 +116,11 @@ const whoWinWhoLose = () => {
 };
 
 const resultsMatch = () => {
-  whoWinWhoLose();
+  // whoWinWhoLose();
   // debugger;
-  if (won.value && lose.value) {
-    teamWon(won.value);
-    teamLose(lose.value);
+  if (matchStatistic.value.status === 'win') {
+    teamWon(teamPlays.teamHost);
+    teamLose(teamPlays.teamGuest);
   } else {
     results[teamPlays.teamHost].draw++;
     results[teamPlays.teamGuest].draw++;
@@ -144,14 +142,19 @@ const teamLose = (t) => {
 
 // NEXT GAME CONFIGURATION
 
-const pushMatchCard = () => {
-  console.log( teamPlays.teamGuest)
-  teamPlays.teamHost = won.value || teamPlays.teamGuest;
-  console.log( teamPlays.teamGuest)
-  teamPlays.teamGuest = teamsData?.filter((team) => !Object.values(teamPlays)?.includes(team))[0];
-  console.log( teamPlays.teamGuest)
-};
+const changeTeams = () => {
+  const lastHost = teamPlays.teamHost;
+  const lastGuest = teamPlays.teamGuest;
+  teamPlays.teamHost =
+    matchStatistic.value.status === 'win' ? lastHost : lastGuest;
+  console.log(teamPlays.teamGuest);
 
+  teamPlays.teamGuest = teamsData?.filter(
+    (team) => ![lastHost, lastGuest]?.includes(team)
+  )[0];
+
+  console.log(teamPlays.teamGuest);
+};
 
 const matchesList = ref([]);
 
@@ -180,24 +183,33 @@ const defaults = {
 };
 
 const addMatch = (payload) => {
-  scoreList.value.push(payload.score);
-  matchStatistic.value = {
-    id: scoreList.value.length,
-    start: timeNow,
-    teamHost: teamPlays.teamHost,
-    teamGuest: teamPlays.teamGuest,
-    score: payload.score,
-    win: won.value || null,
-    lose: lose.value || null,
-    gameTime: 7,
-  };
-  matchesList.value = [...matchesList.value, matchStatistic.value];
-  resultsMatch();
-  console.log(matchStatistic.value);
-  pushMatchCard()
+  debugger
+  if (!scoreList.value.length && payload.teamHostStatus === 'draw') {
+    // сделать промпт - 1 и 2 и если что-то другое вводишь - ошибка
+    prompt(
+      `Шо ничья? Так кто по пенальти победил? Если победила команда ${
+        teamNames[teamPlays.teamHost]
+      } - 1, если команда ${teamNames[teamPlays.teamGuest]} - 2?`,1
+    );
+    alert(`Победила команда ${teamNames[teamPlays.teamHost]}`)
+    scoreList.value.push(payload.score);
+  } else {
+    scoreList.value.push(payload.score);
+    matchStatistic.value = {
+      id: scoreList.value.length,
+      start: timeNow,
+      teamHost: teamPlays.teamHost,
+      teamGuest: teamPlays.teamGuest,
+      score: payload.score,
+      status: payload.teamHostStatus,
+      gameTime: 7,
+    };
+    matchesList.value = [...matchesList.value, matchStatistic.value];
+    resultsMatch();
+    console.log(matchStatistic.value);
+    changeTeams();
+  }
 };
-
-
 
 const removeLastMatch = () => {
   // if (confirm('Удалить матч?')) {

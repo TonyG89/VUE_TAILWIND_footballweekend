@@ -14,7 +14,6 @@
       :match="match"
     />
   </div>
-  {{ timeNow }}
 </template>
 
 <script setup>
