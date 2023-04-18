@@ -1,23 +1,31 @@
 <template>
-  <h1 class="uppercase text-4xl font-bold text-center text-stone-400">
-    Субботний футбол
-  </h1>
-  <TableScore :results="resultsState.team" />
-  <div>
-    <h2 class="">Игры</h2>
-    <MatchesList
-      :teams="teamPlays.value"
-      :score="resultsState.scores.reverse()[0]"
-      :matchesList="matchesList"
-    />
-    <div v-if="matchesList.length" class="flex items-center justify-center m-3">
-      <h2>удалить последнею игру</h2>
-      <button @click="removeLastMatch">x</button>
+  <div class="w-[100%]">
+    <h1 class="uppercase text-4xl font-bold text-center text-stone-400">
+      Субботний футбол
+    </h1>
+    <TableScore :results="resultsState.team" />
+    <div>
+      <h2 class="">Игры</h2>
+      <MatchesList
+        :teams="teamPlays.value"
+        :score="resultsState.scores.reverse()[0]"
+        :matchesList="matchesList"
+      />
+      <div
+        v-if="matchesList.length"
+        class="flex items-center justify-center m-3"
+      >
+        <h2>удалить последнею игру</h2>
+        <button @click="removeLastMatch">x</button>
+      </div>
+      <GameInput @onAddMatch="addMatch" :teams="teamPlays" />
+      {{ scoreList }}
+      <br />
+      {{ resultsState.count }} игр {{ matchesList }} игр
+      <h2>
+        {{ matchStatistic.gameCount }}
+      </h2>
     </div>
-    <GameInput @onAddMatch="addMatch" :teams="teamPlays" />
-    {{ scoreList }}
-    <br />
-    {{ resultsState.count }} игр {{ matchesList }} игр
   </div>
 </template>
 
@@ -33,53 +41,62 @@ const results = reactive({
     lose: 0,
     draw: 0,
     win: 0,
-    balls: 0,
+    ballsIn: 0,
+    ballsOut: 0,
   },
   yellow: {
     lose: 0,
     draw: 0,
     win: 0,
-    balls: 0,
+    ballsIn: 0,
+    ballsOut: 0,
   },
   red: {
     lose: 0,
     draw: 0,
     win: 0,
-    balls: 0,
+    ballsIn: 0,
+    ballsOut: 0,
   },
 });
 
 const resultsState = computed(() => ({
   team: {
     without: {
-      team: 'Без манишек',
+      team: teamNames.without,
       game: results.without.lose + results.without.draw + results.without.win,
       lose: results.without.lose,
       draw: results.without.draw,
       win: results.without.win,
-      balls: results.without.balls,
+      ballsIn: results.without.ballsIn,
+      ballsOut: results.without.ballsOut,
+      balls: results.without.ballsIn - results.without.ballsOut,
       result: results.without.win * 3 + results.without.draw,
       place: 0,
       color: 'bg-slate-500',
     },
     yellow: {
-      team: 'Желтые',
+      team: teamNames.yellow,
       game: results.yellow.lose + results.yellow.draw + results.yellow.win,
       lose: results.yellow.lose,
       draw: results.yellow.draw,
       win: results.yellow.win,
-      balls: results.yellow.balls,
+      ballsIn: results.yellow.ballsIn,
+      ballsOut: results.yellow.ballsOut,
+      balls: results.yellow.ballsIn - results.yellow.ballsOut,
       result: results.yellow.win * 3 + results.yellow.draw,
       place: 0,
       color: 'bg-amber-500',
     },
     red: {
-      team: 'Красные',
+      team: teamNames.red,
       game: results.red.lose + results.red.draw + results.red.win,
       lose: results.red.lose,
       draw: results.red.draw,
       win: results.red.win,
-      balls: results.red.balls,
+      ballsIn: results.red.ballsIn,
+      ballsOut: results.red.ballsOut,
+      balls: results.red.ballsIn - results.red.ballsOut,
       result: results.red.win * 3 + results.red.draw,
       place: 0,
       color: 'bg-red-500',
@@ -118,17 +135,35 @@ const whoWinWhoLose = () => {
 const resultsMatch = () => {
   // whoWinWhoLose();
   // debugger;
-  if (matchStatistic.value.status === 'win') {
-    teamWon(teamPlays.teamHost);
-    teamLose(teamPlays.teamGuest);
+  if (
+    matchesList.value.length === 1 &&
+    matchStatistic.value.status === 'draw'
+  ) {
+    debugger;
   } else {
-    results[teamPlays.teamHost].draw++;
-    results[teamPlays.teamGuest].draw++;
+    switch (matchStatistic.value.status) {
+      case 'win':
+        teamWon(teamPlays.teamHost);
+        teamLose(teamPlays.teamGuest);
+        break;
+      case 'draw':
+        teamWon(teamPlays.teamGuest);
+        teamLose(teamPlays.teamHost);
+        break;
+      default:
+        results[teamPlays.teamHost].draw++;
+        results[teamPlays.teamGuest].draw++;
+    }
   }
-  results[teamPlays.teamHost].game += 5;
-  results[teamPlays.teamGuest].game++;
-  results[teamPlays.teamHost].balls += '';
-  results[teamPlays.teamGuest].balls += '';
+  // debugger;
+  const scoreHost = matchStatistic.value.score[0];
+  const scoreGuest = matchStatistic.value.score[2];
+  results[teamPlays.teamHost].ballsIn += +scoreHost;
+  results[teamPlays.teamGuest].ballsIn += +scoreGuest;
+  results[teamPlays.teamHost].ballsOut += +scoreGuest;
+  results[teamPlays.teamGuest].ballsOut += +scoreHost;
+  console.log(results[teamPlays.teamHost].ballsIn);
+  console.log(results[teamPlays.teamHost].ballsOut);
 };
 
 const teamWon = (t) => {
@@ -141,7 +176,6 @@ const teamLose = (t) => {
 };
 
 // NEXT GAME CONFIGURATION
-
 const changeTeams = () => {
   const lastHost = teamPlays.teamHost;
   const lastGuest = teamPlays.teamGuest;
@@ -172,43 +206,54 @@ const updateTime = (gameTime = 7) => {
 
 const timeNow = ref(updateTime());
 
-const defaults = {
-  game: 0,
-  lose: 0,
-  draw: 0,
-  win: 0,
-  balls: 0,
-  result: 0,
-  allMatches: 0,
-};
-
 const addMatch = (payload) => {
-  debugger
-  if (!scoreList.value.length && payload.teamHostStatus === 'draw') {
-    // сделать промпт - 1 и 2 и если что-то другое вводишь - ошибка
-    prompt(
+  // debugger;
+  matchStatistic.value = {
+    gameCount: null,
+    start: timeNow,
+    teamHost: teamPlays.teamHost,
+    score: null,
+    teamGuest: teamPlays.teamGuest,
+    status: payload.teamHostStatus,
+    gameTime: 7,
+  };
+
+  const firstDraw = () => {
+    const whoWon = prompt(
       `Шо ничья? Так кто по пенальти победил? Если победила команда ${
         teamNames[teamPlays.teamHost]
-      } - 1, если команда ${teamNames[teamPlays.teamGuest]} - 2?`,1
+      } - 1, если команда ${teamNames[teamPlays.teamGuest]} - 2?`,
+      1
     );
-    alert(`Победила команда ${teamNames[teamPlays.teamHost]}`)
-    scoreList.value.push(payload.score);
+    if (whoWon === '1') {
+      teamWon(teamPlays.teamHost);
+      teamLose(teamPlays.teamGuest);
+      alert(`Победила команда ${teamNames[teamPlays.teamHost]}`);
+      matchStatistic.value.score =
+        payload.score + ' п.' + teamNames[teamPlays.teamHost];
+    } else if (whoWon === '2') {
+      teamWon(teamPlays.teamGuest);
+      teamLose(teamPlays.teamHost);
+      matchStatistic.value.score =
+        payload.score + ' п.' + teamNames[teamPlays.teamGuest];
+      alert(`Победила команда ${teamNames[teamPlays.teamGuest]}`);
+    } else {
+      alert('Ну ты и дурак, вводи 1 или 2');
+      firstDraw();
+    }
+  };
+
+  if (!scoreList.value.length && payload.teamHostStatus === 'draw') {
+    firstDraw();
   } else {
-    scoreList.value.push(payload.score);
-    matchStatistic.value = {
-      id: scoreList.value.length,
-      start: timeNow,
-      teamHost: teamPlays.teamHost,
-      teamGuest: teamPlays.teamGuest,
-      score: payload.score,
-      status: payload.teamHostStatus,
-      gameTime: 7,
-    };
-    matchesList.value = [...matchesList.value, matchStatistic.value];
-    resultsMatch();
-    console.log(matchStatistic.value);
-    changeTeams();
+    matchStatistic.value.score = payload.score;
+    console.log(matchStatistic.value.score);
   }
+  scoreList.value.push(payload.score);
+  matchStatistic.value.gameCount = scoreList.value.length;
+  matchesList.value = [...matchesList.value, matchStatistic.value];
+  resultsMatch();
+  changeTeams();
 };
 
 const removeLastMatch = () => {

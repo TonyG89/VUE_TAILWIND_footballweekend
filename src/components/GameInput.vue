@@ -2,11 +2,14 @@
   <div>
     <h2>Результат игры:</h2>
     <div class="flex flex-1 justify-center items-center">
-      <div class="text-sm font-bold mx-4 text-center w-[100px]" :class='colorTeamStyle'>
+      <div
+        class="text-sm font-bold mx-4 text-center w-[100px]"
+        :class="colorTeamStyle"
+      >
         {{ componentsState.teamHost }}
       </div>
       <select v-model="score">
-        <option v-for="score in scoreData" :key="score" >
+        <option v-for="score in scoreData" :key="score">
           {{ score }}
         </option>
       </select>
@@ -22,8 +25,8 @@
 import { computed, reactive, ref } from 'vue';
 import { teamsData, scoreData, teamNames } from '../consts';
 
-const colorTeamStyle = ref(`bg-${props.teams.teamHost}-500`) 
-props.teams.teamGuest === 'red' 
+const colorTeamStyle = ref(`bg-${props.teams.teamHost}-500`);
+props.teams.teamGuest === 'red';
 
 const componentsState = computed(() => ({
   teamHost: teamNames[props.teams.teamHost],
@@ -31,11 +34,11 @@ const componentsState = computed(() => ({
   status:
     scoreData[0] === score.value || scoreData[3] === score.value
       ? 'draw'
-      : scoreData[1] === score.value ||
+      : (scoreData[1] === score.value ||
         scoreData[4] === score.value ||
         scoreData[6] === score.value
       ? 'win'
-      : 'lose',
+      : 'lose'),
 }));
 
 const score = ref(scoreData[0]);

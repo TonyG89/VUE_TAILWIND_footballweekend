@@ -32,14 +32,62 @@ const rowData = reactive({}); // Set rowData to Array of Objects, one Object per
 
 // Each Column Definition results in one Column.
 const columnDefs = reactive({
-  value: Object.keys(props.results.without)
-    ?.filter((col) => col !== 'color')
-    ?.map((header) => ({
-      headerName: header,
-      field: header,
-    })),
+  value: [
+    {
+      headerName: 'Команда',
+      field: 'team',
+    },
+    {
+      headerName: 'Игр',
+      field: 'game',
+    },
+    {
+      headerName: 'П',
+      field: 'lose',
+    },
+    {
+      headerName: 'Н',
+      field: 'draw',
+    },
+    {
+      headerName: 'В',
+      field: 'win',
+    },
+    {
+      headerName: 'ЗМ',
+      field: 'ballsIn',
+    },
+    {
+      headerName: 'ПМ',
+      field: 'ballsOut',
+    },
+    {
+      headerName: 'Мячи',
+      field: 'balls',
+    },
+    {
+      headerName: 'Очки',
+      field: 'result',
+    },
+    {
+      headerName: 'place',
+      field: 'place',
+      hide: true,
+    },
+    {
+      headerName: 'color',
+      field: 'color',
+      hide: true,
+    },
+  ],
 });
 
+console.log(
+  Object.keys(props.results.without)?.map((header) => ({
+    headerName: header,
+    field: header,
+  }))
+);
 // DefaultColDef sets props common to all Columns
 const defaultColDef = {
   sortable: true,
@@ -49,7 +97,10 @@ const defaultColDef = {
 
 rowData.value = Object.values(props.results);
 
-watch(() => props.results, ()=>rowData.value = Object.values(props.results))
+watch(
+  () => props.results,
+  () => (rowData.value = Object.values(props.results))
+);
 
 const props = defineProps({
   results: {
@@ -57,7 +108,6 @@ const props = defineProps({
     required: true,
   },
 });
-
 </script>
 
 <style scoped></style>

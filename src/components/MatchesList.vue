@@ -9,8 +9,8 @@
   </ul>
   <div>
     <MatchCard
-      v-for="match in props.matchesList"
-      :key="match.start"
+      v-for="(match,index) in props.matchesList"
+      :key="index"
       :match="match"
     />
   </div>
