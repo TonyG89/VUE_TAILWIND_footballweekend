@@ -1,36 +1,34 @@
 <template>
   <h1>Результаты игр</h1>
-  <ul class="flex fs-lg uppercase">
-    <li>начало матча</li>
-    <li>команда</li>
-    <li>счет</li>
-    <li>команда</li>
-    <li>время игры</li>
-  </ul>
-  <div>
+  <div class="w-[400px] mx-auto">
+    <ul class="flex fs-lg uppercase">
+      <!-- <li>начало матча</li> -->
+      <li>команда</li>
+      <li>счет</li>
+      <li>команда</li>
+      <!-- <li>время игры</li> -->
+    </ul>
+    <div>
     <MatchCard
-      v-for="(match,index) in props.matchesList"
-      :key="index"
-      :match="match"
+    v-for="(match, index) in props.matchesList"
+    :key="index"
+    :match="match"
+    :color="props.color"
     />
   </div>
+</div>
 </template>
 
 <script setup>
 import { computed, reactive, ref } from 'vue';
 import MatchCard from './MatchCard.vue';
 
-const defaults = {
-  start: '11:00',
-  teamHost: 'team 1',
-  teamGuest: 'team 2',
-  score: '0:0',
-  gameTime: 7,
-};
-
 const props = defineProps({
   matchesList: {
     type: Array,
+  },
+  color: {
+    type: Object,
   },
 });
 

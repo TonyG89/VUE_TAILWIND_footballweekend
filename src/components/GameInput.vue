@@ -17,7 +17,7 @@
         {{ componentsState.teamGuest }}
       </div>
     </div>
-    <button @click="onAddMatch">Добавить</button>
+    <button class="my-3" @click="onAddMatch">Добавить</button>
   </div>
 </template>
 
@@ -34,11 +34,11 @@ const componentsState = computed(() => ({
   status:
     scoreData[0] === score.value || scoreData[3] === score.value
       ? 'draw'
-      : (scoreData[1] === score.value ||
+      : scoreData[1] === score.value ||
         scoreData[4] === score.value ||
         scoreData[6] === score.value
       ? 'win'
-      : 'lose'),
+      : 'lose',
 }));
 
 const score = ref(scoreData[0]);

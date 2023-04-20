@@ -7,9 +7,10 @@
     <div>
       <h2 class="">Игры</h2>
       <MatchesList
-        :teams="teamPlays.value"
-        :score="resultsState.scores.reverse()[0]"
+        :teams="teamPlays"
+        :score="resultsState.scores.slice(-1)"
         :matchesList="matchesList"
+        :color="colorTeam"
       />
       <div
         v-if="matchesList.length"
@@ -30,11 +31,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 import MatchesList from './components/MatchesList.vue';
 import GameInput from './components/GameInput.vue';
 import TableScore from './components/TableScore.vue';
-import { teamsData, teamNames } from './consts/';
+import { teamsData, teamNames, colorTeam } from './consts/';
+
+const wonByPenalty = ref('');
 
 const results = reactive({
   without: {
@@ -73,7 +76,7 @@ const resultsState = computed(() => ({
       balls: results.without.ballsIn - results.without.ballsOut,
       result: results.without.win * 3 + results.without.draw,
       place: 0,
-      color: 'bg-slate-500',
+      color: colorTeam.without,
     },
     yellow: {
       team: teamNames.yellow,
@@ -86,7 +89,7 @@ const resultsState = computed(() => ({
       balls: results.yellow.ballsIn - results.yellow.ballsOut,
       result: results.yellow.win * 3 + results.yellow.draw,
       place: 0,
-      color: 'bg-amber-500',
+      color: colorTeam.yellow,
     },
     red: {
       team: teamNames.red,
@@ -99,7 +102,7 @@ const resultsState = computed(() => ({
       balls: results.red.ballsIn - results.red.ballsOut,
       result: results.red.win * 3 + results.red.draw,
       place: 0,
-      color: 'bg-red-500',
+      color: colorTeam.red,
     },
   },
   count: scoreList.value.length,
@@ -117,21 +120,6 @@ const lastGame = computed(() => ({}));
 
 // WHO WIN WHO LOSE
 
-const whoWinWhoLose = () => {
-  // debugger
-  const currentScore = scoreList.value[0];
-  if (currentScore[0] > currentScore[2] || currentScore[0] === 2) {
-    won.value = teamPlays.teamHost;
-    lose.value = teamPlays.teamGuest;
-  } else if (currentScore[0] === currentScore[2]) {
-    won.value = teamPlays.teamGuest;
-    lose.value = null;
-  } else {
-    won.value = teamPlays.teamGuest;
-    lose.value = teamPlays.teamHost;
-  }
-};
-
 const resultsMatch = () => {
   // whoWinWhoLose();
   // debugger;
@@ -139,7 +127,7 @@ const resultsMatch = () => {
     matchesList.value.length === 1 &&
     matchStatistic.value.status === 'draw'
   ) {
-    debugger;
+    // debugger;
   } else {
     switch (matchStatistic.value.status) {
       case 'win':
@@ -179,15 +167,20 @@ const teamLose = (t) => {
 const changeTeams = () => {
   const lastHost = teamPlays.teamHost;
   const lastGuest = teamPlays.teamGuest;
-  teamPlays.teamHost =
-    matchStatistic.value.status === 'win' ? lastHost : lastGuest;
-  console.log(teamPlays.teamGuest);
-
+  // FIRST TEAM ON NEW GAME
+  if (
+    matchesList.value.length === 1 &&
+    matchStatistic.value.status === 'draw'
+  ) {
+    teamPlays.teamHost = wonByPenalty
+  } else {
+    teamPlays.teamHost =
+      matchStatistic.value.status === 'win' ? lastHost : lastGuest;
+  }
+  // SECOND TEAM ON NEW GAME
   teamPlays.teamGuest = teamsData?.filter(
     (team) => ![lastHost, lastGuest]?.includes(team)
   )[0];
-
-  console.log(teamPlays.teamGuest);
 };
 
 const matchesList = ref([]);
@@ -195,30 +188,31 @@ const matchesList = ref([]);
 const matchStatistic = reactive({});
 
 // время
-const updateTime = (gameTime = 7) => {
-  const date = new Date();
-  const hours = date.getHours();
-  let minutes = date.getMinutes();
-  const correctMinutes = minutes / 10 < 1 ? `0${minutes}` : minutes;
-  const timeString = `${hours}:${correctMinutes}`;
-  return timeString;
-};
+// const updateTime = (gameTime = 7) => {
+//   const date = new Date();
+//   const hours = date.getHours();
+//   let minutes = date.getMinutes();
+//   const correctMinutes = minutes / 10 < 1 ? `0${minutes}` : minutes;
+//   const timeString = `${hours}:${correctMinutes}`;
+//   return timeString;
+// };
 
-const timeNow = ref(updateTime());
+// const timeNow = ref(updateTime());
 
 const addMatch = (payload) => {
   // debugger;
   matchStatistic.value = {
     gameCount: null,
-    start: timeNow,
+    // start: timeNow,
     teamHost: teamPlays.teamHost,
     score: null,
     teamGuest: teamPlays.teamGuest,
     status: payload.teamHostStatus,
-    gameTime: 7,
+    // gameTime: 7,
   };
 
   const firstDraw = () => {
+    debugger;
     const whoWon = prompt(
       `Шо ничья? Так кто по пенальти победил? Если победила команда ${
         teamNames[teamPlays.teamHost]
@@ -229,22 +223,32 @@ const addMatch = (payload) => {
       teamWon(teamPlays.teamHost);
       teamLose(teamPlays.teamGuest);
       alert(`Победила команда ${teamNames[teamPlays.teamHost]}`);
+
       matchStatistic.value.score =
         payload.score + ' п.' + teamNames[teamPlays.teamHost];
+
+      wonByPenalty.value = teamPlays.teamHost;
     } else if (whoWon === '2') {
       teamWon(teamPlays.teamGuest);
       teamLose(teamPlays.teamHost);
+
       matchStatistic.value.score =
         payload.score + ' п.' + teamNames[teamPlays.teamGuest];
-      alert(`Победила команда ${teamNames[teamPlays.teamGuest]}`);
+      
+        // alert(`Победила команда ${teamNames[teamPlays.teamGuest]}`);
+      
+        wonByPenalty.value = teamPlays.teamGuest;
     } else {
       alert('Ну ты и дурак, вводи 1 или 2');
       firstDraw();
     }
+      
+  console.log(wonByPenalty.value);
   };
 
   if (!scoreList.value.length && payload.teamHostStatus === 'draw') {
     firstDraw();
+    // debugger;
   } else {
     matchStatistic.value.score = payload.score;
     console.log(matchStatistic.value.score);
@@ -259,8 +263,29 @@ const addMatch = (payload) => {
 const removeLastMatch = () => {
   // if (confirm('Удалить матч?')) {
   matchesList.value.pop();
+  scoreList.value.pop();
+  // debugger;
+  teamPlays.value = {
+    teamHost: 'sss',
+    teamGuest: 'sdaxxx',
+  };
   // }
 };
+
+watch(
+  () => scoreList.value,
+  (newVal) => {
+    console.log(newVal);
+  }
+);
+
+watch(
+  () => scoreList.value,
+  (newVal) => {
+    console.log(newVal);
+  }
+);
+
 </script>
 
 <style scoped>

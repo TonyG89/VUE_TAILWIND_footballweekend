@@ -3,9 +3,10 @@
     <h3>Результат:</h3>
     <AgGridVue
       class="ag-theme-alpine"
-      style="height: 500px"
+      style="height: 200px"
       :columnDefs="columnDefs.value"
       :rowData="rowData.value"
+      :statusBar="statusBar"
       :defaultColDef="defaultColDef"
       rowSelection="multiple"
       animateRows="true"
@@ -36,9 +37,11 @@ const columnDefs = reactive({
     {
       headerName: 'Команда',
       field: 'team',
+      width: '140px',
+      flex: 'none',
     },
     {
-      headerName: 'Игр',
+      headerName: 'Игры',
       field: 'game',
     },
     {
@@ -70,7 +73,7 @@ const columnDefs = reactive({
       field: 'result',
     },
     {
-      headerName: 'place',
+      headerName: 'Место',
       field: 'place',
       hide: true,
     },
@@ -82,17 +85,64 @@ const columnDefs = reactive({
   ],
 });
 
-console.log(
-  Object.keys(props.results.without)?.map((header) => ({
-    headerName: header,
-    field: header,
-  }))
-);
+// console.log(
+//   Object.keys(props.results.without)?.map((header) => ({
+//     headerName: header,
+//     field: header,
+//   }))
+// );
+
+const statusBar = {
+  statusPanels: [
+    { statusPanel: 'agTotalRowCountComponent', align: 'left' },
+    // { statusPanel: totalSumCol3 , align: "right"},
+    { statusPanel: 'agTotalAndFilteredRowCountComponent', align: 'left' },
+    { statusPanel: 'agAggregationComponent' },
+  ],
+};
+
 // DefaultColDef sets props common to all Columns
 const defaultColDef = {
   sortable: true,
-  filter: true,
+  // filter: true,
   flex: 1,
+  resizable: true,
+  // width: '100px',
+  autoWidth: true,
+  autoSizeColumns: true,
+  // editable: true,
+  cellStyle: {
+    'text-align': 'start',
+  },
+  gridOptions: {
+    autoWidth: true,
+    showTotals: 'row', // Отображаем итоги строк внизу таблицы
+    rowGroupPanelShow: 'always', // Показываем панель группировки строк всегда
+    enableRangeSelection: true, // Разрешаем выбор диапазона ячеек
+    pinnedBottomRowConfig: [
+      {
+        field: 'game',
+        title: 'Всего игр:',
+        type: 'int',
+        aggAttrName: 'count',
+      },
+    ],
+  },
+};
+
+const gridOptions = {
+  autoWidth: true,
+  showTotals: 'row', // Отображаем итоги строк внизу таблицы
+  rowGroupPanelShow: 'always', // Показываем панель группировки строк всегда
+  enableRangeSelection: true, // Разрешаем выбор диапазона ячеек
+  pinnedBottomRowConfig: [
+    {
+      field: 'game',
+      title: 'Всего игр:',
+      type: 'int',
+      aggAttrName: 'count',
+    },
+  ],
 };
 
 rowData.value = Object.values(props.results);
