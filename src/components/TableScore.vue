@@ -41,32 +41,49 @@ const columnDefs = reactive({
       flex: 'none',
     },
     {
-      headerName: 'Игры',
-      field: 'game',
-    },
-    {
-      headerName: 'П',
-      field: 'lose',
-    },
-    {
-      headerName: 'Н',
-      field: 'draw',
-    },
-    {
-      headerName: 'В',
-      field: 'win',
-    },
-    {
-      headerName: 'ЗМ',
-      field: 'ballsIn',
-    },
-    {
-      headerName: 'ПМ',
-      field: 'ballsOut',
+      headerName: 'Результат игр',
+      marryChildren: true,
+      children: [
+        {
+          headerName: 'Игры',
+          field: 'game',
+        },
+        {
+          headerName: 'Проигрыш',
+          field: 'lose',
+          columnGroupShow: 'open',
+        },
+        {
+          headerName: 'Ничья',
+          field: 'draw',
+          columnGroupShow: 'open',
+        },
+        {
+          headerName: 'Выигрыш',
+          field: 'win',
+          columnGroupShow: 'open',
+        },
+      ],
     },
     {
       headerName: 'Мячи',
-      field: 'balls',
+      marryChildren: true,
+      children: [
+        {
+          headerName: 'Забитые',
+          field: 'ballsIn',
+          columnGroupShow: 'open',
+        },
+        {
+          headerName: 'Пропущенные',
+          field: 'ballsOut',
+          columnGroupShow: 'open',
+        },
+        {
+          headerName: 'Разница',
+          field: 'balls',
+        },
+      ],
     },
     {
       headerName: 'Очки',
