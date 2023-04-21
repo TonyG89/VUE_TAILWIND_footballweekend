@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Результат игры:</h2>
+    <h2 class="text-xl m-5">Результат игры:</h2>
     <div class="flex flex-1 justify-center items-center">
       <div
         class="text-sm font-bold mx-4 text-center w-[100px]"
@@ -68,11 +68,10 @@ select {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  padding: 10px;
   font-size: large;
   border-radius: 30%;
   border: 2px solid #ccc;
-  padding-left: 14px;
+  padding-left: 5.5px;
   letter-spacing: 5px;
   text-align: center;
   justify-content: center;

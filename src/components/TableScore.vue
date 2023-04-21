@@ -1,14 +1,13 @@
 <template>
-  <div>
-    <h3>Результат:</h3>
+  <div class="w-full my-5">
     <AgGridVue
       class="ag-theme-alpine"
-      style="height: 200px"
+      style="height: 300px"
       :columnDefs="columnDefs.value"
       :rowData="rowData.value"
       :statusBar="statusBar"
       :defaultColDef="defaultColDef"
-      rowSelection="multiple"
+      :gridOptions="gridOptions"
       animateRows="true"
       @cell-clicked="cellWasClicked"
       @grid-ready="onGridReady"
@@ -37,7 +36,7 @@ const columnDefs = reactive({
     {
       headerName: 'Команда',
       field: 'team',
-      width: '140px',
+      width: '95px',
       flex: 'none',
     },
     {
@@ -127,15 +126,18 @@ const defaultColDef = {
   // width: '100px',
   autoWidth: true,
   autoSizeColumns: true,
+  suppressRowDrag: true,
   // editable: true,
   cellStyle: {
-    'text-align': 'start',
+    'font-size': '0.8rem',
   },
+
   gridOptions: {
-    autoWidth: true,
     showTotals: 'row', // Отображаем итоги строк внизу таблицы
     rowGroupPanelShow: 'always', // Показываем панель группировки строк всегда
     enableRangeSelection: true, // Разрешаем выбор диапазона ячеек
+
+    suppressRowDrag: true,
     pinnedBottomRowConfig: [
       {
         field: 'game',
@@ -148,18 +150,8 @@ const defaultColDef = {
 };
 
 const gridOptions = {
-  autoWidth: true,
-  showTotals: 'row', // Отображаем итоги строк внизу таблицы
-  rowGroupPanelShow: 'always', // Показываем панель группировки строк всегда
-  enableRangeSelection: true, // Разрешаем выбор диапазона ячеек
-  pinnedBottomRowConfig: [
-    {
-      field: 'game',
-      title: 'Всего игр:',
-      type: 'int',
-      aggAttrName: 'count',
-    },
-  ],
+
+
 };
 
 rowData.value = Object.values(props.results);
@@ -177,4 +169,15 @@ const props = defineProps({
 });
 </script>
 
-<style scoped></style>
+<style>
+.ag-header-row {
+  color: #000;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.ag-cell{
+  padding: 0.1rem;
+  text-align: center;
+  font-weight: 600;
+}
+</style>

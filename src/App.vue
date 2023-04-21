@@ -1,12 +1,12 @@
 <template>
-  <div class="w-[100%]">
+  <div class="w-[100%] mx-0 px-0">
     <h1 class="uppercase text-4xl font-bold text-center text-stone-400">
       Субботний футбол
     </h1>
     <TableScore :results="resultsState.team" />
     <div>
-      <h2 class="">Игры</h2>
       <MatchesList
+        v-if="matchesList.length"
         :teams="teamPlays"
         :score="resultsState.scores.slice(-1)"
         :matchesList="matchesList"
@@ -16,16 +16,21 @@
         v-if="matchesList.length"
         class="flex items-center justify-center m-3"
       >
-        <h2>удалить последнею игру</h2>
-        <button @click="removeLastMatch">x</button>
+        <button class="text-red-700" @click="removeLastMatch">
+          удалить последнею игру
+        </button>
+        <button class="text-red-700" @click="hardReset">
+          hardReset
+        </button>
       </div>
       <GameInput @onAddMatch="addMatch" :teams="teamPlays" />
       {{ scoreList }}
       <br />
-      {{ resultsState.count }} игр {{ matchesList }} игр
-      <h2>
-        {{ matchStatistic.gameCount }}
-      </h2>
+      {{ resultsState.count }}
+      <br />
+      {{ matchesList }}
+      <br />
+      {{ matchStatistic.gameCount }}
     </div>
   </div>
 </template>
@@ -119,10 +124,16 @@ const teamPlays = reactive({
 const lastGame = computed(() => ({}));
 
 // WHO WIN WHO LOSE
+const teamWon = (t) => {
+  results[t].win++;
+  results[t].result += 3;
+};
+
+const teamLose = (t) => {
+  results[t].lose++;
+};
 
 const resultsMatch = () => {
-  // whoWinWhoLose();
-  // debugger;
   if (
     matchesList.value.length === 1 &&
     matchStatistic.value.status === 'draw'
@@ -134,7 +145,7 @@ const resultsMatch = () => {
         teamWon(teamPlays.teamHost);
         teamLose(teamPlays.teamGuest);
         break;
-      case 'draw':
+      case 'lose':
         teamWon(teamPlays.teamGuest);
         teamLose(teamPlays.teamHost);
         break;
@@ -143,6 +154,7 @@ const resultsMatch = () => {
         results[teamPlays.teamGuest].draw++;
     }
   }
+
   // debugger;
   const scoreHost = matchStatistic.value.score[0];
   const scoreGuest = matchStatistic.value.score[2];
@@ -150,18 +162,41 @@ const resultsMatch = () => {
   results[teamPlays.teamGuest].ballsIn += +scoreGuest;
   results[teamPlays.teamHost].ballsOut += +scoreGuest;
   results[teamPlays.teamGuest].ballsOut += +scoreHost;
-  console.log(results[teamPlays.teamHost].ballsIn);
-  console.log(results[teamPlays.teamHost].ballsOut);
 };
 
-const teamWon = (t) => {
-  results[t].win++;
-  results[t].result += 3;
-};
+ // CANCEL
+ const teamWonCancel = (t) => {
+    results[t].win--;
+    results[t].result -= 3;
+  };
 
-const teamLose = (t) => {
-  results[t].lose++;
-};
+  const teamLoseCancel = (t) => {
+    results[t].lose--;
+  };
+
+  const cancelMatch = () => {
+    if (
+      matchesList.value.length === 1 &&
+      matchStatistic.value.status === 'draw'
+    ) {
+      // debugger;
+    } else {
+      switch (matchStatistic.value.status) {
+        case 'win':
+          teamWonCancel(teamPlays.teamHost);
+          teamLoseCancel(teamPlays.teamGuest);
+          break;
+        case 'lose':
+          teamWonCancel(teamPlays.teamGuest);
+          teamLoseCancel(teamPlays.teamHost);
+          break;
+        default:
+          results[teamPlays.teamHost].draw--;
+          results[teamPlays.teamGuest].draw--;
+      }
+    }
+  };
+
 
 // NEXT GAME CONFIGURATION
 const changeTeams = () => {
@@ -172,7 +207,7 @@ const changeTeams = () => {
     matchesList.value.length === 1 &&
     matchStatistic.value.status === 'draw'
   ) {
-    teamPlays.teamHost = wonByPenalty
+    teamPlays.teamHost = wonByPenalty;
   } else {
     teamPlays.teamHost =
       matchStatistic.value.status === 'win' ? lastHost : lastGuest;
@@ -212,7 +247,7 @@ const addMatch = (payload) => {
   };
 
   const firstDraw = () => {
-    debugger;
+    // debugger;
     const whoWon = prompt(
       `Шо ничья? Так кто по пенальти победил? Если победила команда ${
         teamNames[teamPlays.teamHost]
@@ -222,7 +257,7 @@ const addMatch = (payload) => {
     if (whoWon === '1') {
       teamWon(teamPlays.teamHost);
       teamLose(teamPlays.teamGuest);
-      alert(`Победила команда ${teamNames[teamPlays.teamHost]}`);
+      // alert(`Победила команда ${teamNames[teamPlays.teamHost]}`);
 
       matchStatistic.value.score =
         payload.score + ' п.' + teamNames[teamPlays.teamHost];
@@ -234,16 +269,16 @@ const addMatch = (payload) => {
 
       matchStatistic.value.score =
         payload.score + ' п.' + teamNames[teamPlays.teamGuest];
-      
-        // alert(`Победила команда ${teamNames[teamPlays.teamGuest]}`);
-      
-        wonByPenalty.value = teamPlays.teamGuest;
+
+      // alert(`Победила команда ${teamNames[teamPlays.teamGuest]}`);
+
+      wonByPenalty.value = teamPlays.teamGuest;
     } else {
       alert('Ну ты и дурак, вводи 1 или 2');
       firstDraw();
     }
-      
-  console.log(wonByPenalty.value);
+
+    console.log(wonByPenalty.value);
   };
 
   if (!scoreList.value.length && payload.teamHostStatus === 'draw') {
@@ -251,7 +286,6 @@ const addMatch = (payload) => {
     // debugger;
   } else {
     matchStatistic.value.score = payload.score;
-    console.log(matchStatistic.value.score);
   }
   scoreList.value.push(payload.score);
   matchStatistic.value.gameCount = scoreList.value.length;
@@ -262,15 +296,28 @@ const addMatch = (payload) => {
 
 const removeLastMatch = () => {
   // if (confirm('Удалить матч?')) {
+  cancelMatch();
+  (teamPlays.teamHost = matchesList.value.at(-1).teamHost),
+    (teamPlays.teamGuest = matchesList.value.at(-1).teamGuest),
+    (results[teamPlays.teamHost].ballsIn -= +matchStatistic.value.score[0]);
+  results[teamPlays.teamGuest].ballsIn -= +matchStatistic.value.score[2];
+  results[teamPlays.teamHost].ballsOut -= +matchStatistic.value.score[2];
+  results[teamPlays.teamGuest].ballsOut -= +matchStatistic.value.score[0];
   matchesList.value.pop();
   scoreList.value.pop();
-  // debugger;
-  teamPlays.value = {
-    teamHost: 'sss',
-    teamGuest: 'sdaxxx',
-  };
   // }
 };
+const hardReset = () =>{
+  if (confirm('Сбросить все?')) {
+    matchesList.value = [];
+    scoreList.value = [];
+    results = {};
+    teamPlays.teamHost = null;
+    teamPlays.teamGuest = null;
+    wonByPenalty.value = null;
+    resultsMatch();
+  }
+}
 
 watch(
   () => scoreList.value,
@@ -285,7 +332,6 @@ watch(
     console.log(newVal);
   }
 );
-
 </script>
 
 <style scoped>

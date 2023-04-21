@@ -1,7 +1,7 @@
 <template>
-  <h1>Результаты игр</h1>
-  <div class="w-[400px] mx-auto">
-    <ul class="flex fs-lg uppercase">
+  <h2 class="text-xl mb-3">Результаты игр</h2>
+  <div class="w-auto mx-auto">
+    <ul class="flex text-sm uppercase">
       <!-- <li>начало матча</li> -->
       <li>команда</li>
       <li>счет</li>
@@ -39,8 +39,8 @@ console.log(props.teams);
 li {
   border: 1px solid black;
   padding: 5px;
-  font: 900;
-  font-size: 1.5em;
+  font: 700;
+  font-size: 1em;
   flex: 1 1 0%;
 }
 </style>
