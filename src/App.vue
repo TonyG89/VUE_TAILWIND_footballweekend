@@ -19,18 +19,16 @@
         <button class="text-red-700" @click="removeLastMatch">
           удалить последнею игру
         </button>
-        <button class="text-red-700" @click="hardReset">
-          hardReset
-        </button>
+        <button class="text-red-700" @click="hardReset">hardReset</button>
       </div>
       <GameInput @onAddMatch="addMatch" :teams="teamPlays" />
-      {{ scoreList }}
+      <!-- {{ scoreList }}
       <br />
       {{ resultsState.count }}
       <br />
       {{ matchesList }}
       <br />
-      {{ matchStatistic.gameCount }}
+      {{ matchStatistic.gameCount }} -->
     </div>
   </div>
 </template>
@@ -164,39 +162,45 @@ const resultsMatch = () => {
   results[teamPlays.teamGuest].ballsOut += +scoreHost;
 };
 
- // CANCEL
- const teamWonCancel = (t) => {
-    results[t].win--;
-    results[t].result -= 3;
-  };
+// CANCEL
+const teamWonCancel = (t) => {
+  results[t].win--;
+  results[t].result -= 3;
+};
 
-  const teamLoseCancel = (t) => {
-    results[t].lose--;
-  };
+const teamLoseCancel = (t) => {
+  results[t].lose--;
+};
 
-  const cancelMatch = () => {
-    if (
-      matchesList.value.length === 1 &&
-      matchStatistic.value.status === 'draw'
-    ) {
-      // debugger;
-    } else {
-      switch (matchStatistic.value.status) {
-        case 'win':
-          teamWonCancel(teamPlays.teamHost);
-          teamLoseCancel(teamPlays.teamGuest);
-          break;
-        case 'lose':
-          teamWonCancel(teamPlays.teamGuest);
-          teamLoseCancel(teamPlays.teamHost);
-          break;
-        default:
-          results[teamPlays.teamHost].draw--;
-          results[teamPlays.teamGuest].draw--;
-      }
+const cancelMatch = () => {
+  if (
+    matchesList.value.length === 1
+    // && matchStatistic.value.status === 'draw'
+  ) {
+    results['yellow'].lose = 0;
+    results['yellow'].draw = 0;
+    results['yellow'].win = 0;
+    results['red'].lose = 0;
+    results['red'].draw = 0;
+    results['red'].win = 0;
+    
+  } else {
+    // debugger;
+    switch (matchStatistic.value.status) {
+      case 'win':
+        teamWonCancel(matchesList.value[matchesList.value.length-1].teamHost);
+        teamLoseCancel(matchesList.value[matchesList.value.length-1].teamGuest);
+        break;
+      case 'lose':
+        teamWonCancel(matchesList.value[matchesList.value.length-1].teamGuest);
+        teamLoseCancel(matchesList.value[matchesList.value.length-1].teamHost);
+        break;
+      default:
+        results[matchesList.value[matchesList.value.length-1].teamHost].draw--;
+        results[matchesList.value[matchesList.value.length-1].teamGuest].draw--;
     }
-  };
-
+  }
+};
 
 // NEXT GAME CONFIGURATION
 const changeTeams = () => {
@@ -307,7 +311,7 @@ const removeLastMatch = () => {
   scoreList.value.pop();
   // }
 };
-const hardReset = () =>{
+const hardReset = () => {
   if (confirm('Сбросить все?')) {
     matchesList.value = [];
     scoreList.value = [];
@@ -317,7 +321,7 @@ const hardReset = () =>{
     wonByPenalty.value = null;
     resultsMatch();
   }
-}
+};
 
 watch(
   () => scoreList.value,
