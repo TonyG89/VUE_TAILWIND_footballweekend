@@ -16,10 +16,10 @@
         v-if="matchesList.length"
         class="flex items-center justify-center m-3"
       >
-        <button class="text-red-700" @click="removeLastMatch">
+        <button v-if="showButton" class="text-red-700" @click="removeLastMatch">
           удалить последнею игру
         </button>
-        <button class="text-red-700" @click="hardReset">hardReset</button>
+        <!-- <button class="text-red-700" @click="hardReset">hardReset</button> -->
       </div>
       <GameInput @onAddMatch="addMatch" :teams="teamPlays" />
       <!-- {{ scoreList }}
@@ -41,6 +41,8 @@ import TableScore from './components/TableScore.vue';
 import { teamsData, teamNames, colorTeam } from './consts/';
 
 const wonByPenalty = ref('');
+
+const showButton = ref(true);
 
 const results = reactive({
   without: {
@@ -240,6 +242,7 @@ const matchStatistic = reactive({});
 
 const addMatch = (payload) => {
   // debugger;
+  showButton.value = true;
   matchStatistic.value = {
     gameCount: null,
     // start: timeNow,
@@ -297,10 +300,11 @@ const addMatch = (payload) => {
   resultsMatch();
   changeTeams();
 };
-
+// TODO:проблема с удалением
 const removeLastMatch = () => {
-  // if (confirm('Удалить матч?')) {
+  if (confirm('Удалить матч?')) {
   cancelMatch();
+  showButton.value = false;
   (teamPlays.teamHost = matchesList.value.at(-1).teamHost),
     (teamPlays.teamGuest = matchesList.value.at(-1).teamGuest),
     (results[teamPlays.teamHost].ballsIn -= +matchStatistic.value.score[0]);
@@ -309,8 +313,9 @@ const removeLastMatch = () => {
   results[teamPlays.teamGuest].ballsOut -= +matchStatistic.value.score[0];
   matchesList.value.pop();
   scoreList.value.pop();
-  // }
+  }
 };
+
 const hardReset = () => {
   if (confirm('Сбросить все?')) {
     matchesList.value = [];
