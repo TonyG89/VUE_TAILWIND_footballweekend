@@ -32,7 +32,7 @@ const props = defineProps({
   },
 });
 
-console.log(props.teams);
+console.log(props);
 </script>
 
 <style scoped>
