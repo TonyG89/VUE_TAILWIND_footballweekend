@@ -3,9 +3,6 @@
     <h1 class="uppercase text-4xl font-bold text-center text-stone-400">
       Субботний футбол
     </h1>
-    <h3 v-if="!matchesList.length" class="w-content bg-red-700">
-      первую игру играют команды в манишках!!!
-    </h3>
     <TableScore :results="resultsState.team" />
     <div>
       <MatchesList
@@ -47,7 +44,7 @@ const wonByPenalty = ref('');
 
 const showButton = ref(true);
 
-let results = reactive({
+const results = reactive({
   without: {
     lose: 0,
     draw: 0,
@@ -118,8 +115,7 @@ const resultsState = computed(() => ({
 }));
 
 const scoreList = ref([]);
-const matchesList = ref([]);
-const matchStatistic = reactive({});
+
 const teamPlays = reactive({
   teamHost: 'yellow',
   teamGuest: 'red',
@@ -235,6 +231,10 @@ const changeTeams = () => {
   )[0];
 };
 
+const matchesList = ref([]);
+
+const matchStatistic = reactive({});
+
 // время
 // const updateTime = (gameTime = 7) => {
 //   const date = new Date();
@@ -263,7 +263,7 @@ const addMatch = (payload) => {
   const firstDraw = () => {
     // debugger;
     const whoWon = prompt(
-      `Шо ничья? Кто по пенальти победил? Если победила команда ${
+      `Шо ничья? Так кто по пенальти победил? Если победила команда ${
         teamNames[teamPlays.teamHost]
       } - 1, если команда ${teamNames[teamPlays.teamGuest]} - 2?`,
       1
@@ -288,7 +288,7 @@ const addMatch = (payload) => {
 
       wonByPenalty.value = teamPlays.teamGuest;
     } else {
-      alert('Можно ввести 1 или 2');
+      alert('Ну ты и дурак, вводи 1 или 2');
       firstDraw();
     }
 
@@ -320,7 +320,6 @@ const removeLastMatch = () => {
     results[teamPlays.teamGuest].ballsOut -= +matchStatistic.value.score[0];
     matchesList.value.pop();
     scoreList.value.pop();
-    debugger;
   }
 };
 
@@ -344,29 +343,29 @@ function sameKeys(mainObj, fullObj) {
   }
 }
 
-onBeforeMount(() => {
-  // debugger;
-  if (Boolean(localStorage.results)) {
-    const jsonMatchesList = localStorage.getItem('matchesList');
-    const jsonResults = localStorage.getItem('results');
-    matchesList.value = JSON.parse(jsonMatchesList);
-    // debugger
-    results.team = JSON.parse(jsonResults);
-  }
-});
+// onBeforeMount(() => {
+//   // debugger;
+//   if (Boolean(localStorage.results)) {
+//     const jsonMatchesList = localStorage.getItem('matchesList');
+//     const jsonResults = localStorage.getItem('results');
+//     matchesList.value = JSON.parse(jsonMatchesList);
+//     // debugger
+//     results.team = JSON.parse(jsonResults);
+//   }
+// });
 
-watch(
-  () => resultsState.value,
-  (refreshData) => {
-    console.log(refreshData);
-    const jsonMatchesList = JSON.stringify(matchesList.value);
-    const jsonResults = JSON.stringify(results);
-    localStorage.setItem('matchesList', jsonMatchesList);
-    localStorage.setItem('results', jsonResults);
-    // debugger;
-    // localStorage.results = refreshData;
-  }
-);
+// watch(
+//   () => resultsState.value,
+//   (refreshData) => {
+//     console.log(refreshData);
+//     const jsonMatchesList = JSON.stringify(matchesList.value);
+//     const jsonResults = JSON.stringify(results);
+//     localStorage.setItem('matchesList', jsonMatchesList);
+//     localStorage.setItem('results', jsonResults);
+//     // debugger;
+//     // localStorage.results = refreshData;
+//   }
+// );
 
 //     matchesList.value watcher to localstorage
 //     results.value watcher to localstorage
