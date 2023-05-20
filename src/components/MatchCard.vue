@@ -48,5 +48,6 @@ const props = defineProps({
 li {
   border: 1px solid black;
   flex: 1 1 0%;
+  color: 000;
 }
 </style>
