@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vercel/analytics": "^1.0.1",
     "ag-grid-community": "^29.2.0",
     "ag-grid-vue3": "^29.2.0",
     "vue": "^3.2.45"
