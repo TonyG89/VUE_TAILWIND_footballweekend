@@ -3,7 +3,7 @@
     <h1 class="uppercase text-4xl font-bold text-center text-stone-400">
       Субботний футбол
     </h1>
-    <TableScore :results="resultsState.team" />
+    <TableScore :results="results" />
     <div>
       <MatchesList
         v-if="matchesList.length"
@@ -67,6 +67,13 @@ const results = reactive({
     ballsOut: 0,
   },
 });
+
+// const resultState = reactive({
+//   teamHost:,
+//   teamGuest:,
+// result:,
+// goals:,
+// })
 
 const resultsState = computed(() => ({
   team: {
@@ -185,7 +192,7 @@ const cancelMatch = () => {
     results['red'].lose = 0;
     results['red'].draw = 0;
     results['red'].win = 0;
-    
+
   } else {
     // debugger;
     switch (matchStatistic.value.status) {

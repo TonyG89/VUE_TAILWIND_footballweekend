@@ -9,9 +9,9 @@ const teamNames = {
 }
 
 const colorTeam = {
-  without: 'bg-slate-700',
-  yellow: 'bg-amber-700',
-  red: 'bg-red-700',
+  without: 'bg-slate-600',
+  yellow: 'bg-amber-600',
+  red: 'bg-red-600',
 }
 
 export { teamsData, scoreData, teamNames, colorTeam };
