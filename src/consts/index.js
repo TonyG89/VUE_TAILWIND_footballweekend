@@ -14,4 +14,28 @@ const colorTeam = {
   red: 'bg-red-700',
 }
 
-export { teamsData, scoreData, teamNames, colorTeam };
+const defaultResults = {
+  without: {
+    lose: 0,
+    draw: 0,
+    win: 0,
+    ballsIn: 0,
+    ballsOut: 0,
+  },
+  yellow: {
+    lose: 0,
+    draw: 0,
+    win: 0,
+    ballsIn: 0,
+    ballsOut: 0,
+  },
+  red: {
+    lose: 0,
+    draw: 0,
+    win: 0,
+    ballsIn: 0,
+    ballsOut: 0,
+  },
+};
+
+export { teamsData, scoreData, teamNames, colorTeam, defaultResults };
