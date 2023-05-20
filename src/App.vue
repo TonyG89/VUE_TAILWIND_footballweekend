@@ -47,8 +47,6 @@ const wonByPenalty = ref('');
 
 const showButton = ref(true);
 
-const localResults = reactive({});
-
 let results = reactive({
   without: {
     lose: 0,
@@ -74,6 +72,47 @@ let results = reactive({
 });
 
 const resultsState = computed(() => ({
+  team: {
+    without: {
+      team: teamNames.without,
+      game: results.without.lose + results.without.draw + results.without.win,
+      lose: results.without.lose,
+      draw: results.without.draw,
+      win: results.without.win,
+      ballsIn: results.without.ballsIn,
+      ballsOut: results.without.ballsOut,
+      balls: results.without.ballsIn - results.without.ballsOut,
+      result: results.without.win * 3 + results.without.draw,
+      place: 0,
+      color: colorTeam.without,
+    },
+    yellow: {
+      team: teamNames.yellow,
+      game: results.yellow.lose + results.yellow.draw + results.yellow.win,
+      lose: results.yellow.lose,
+      draw: results.yellow.draw,
+      win: results.yellow.win,
+      ballsIn: results.yellow.ballsIn,
+      ballsOut: results.yellow.ballsOut,
+      balls: results.yellow.ballsIn - results.yellow.ballsOut,
+      result: results.yellow.win * 3 + results.yellow.draw,
+      place: 0,
+      color: colorTeam.yellow,
+    },
+    red: {
+      team: teamNames.red,
+      game: results.red.lose + results.red.draw + results.red.win,
+      lose: results.red.lose,
+      draw: results.red.draw,
+      win: results.red.win,
+      ballsIn: results.red.ballsIn,
+      ballsOut: results.red.ballsOut,
+      balls: results.red.ballsIn - results.red.ballsOut,
+      result: results.red.win * 3 + results.red.draw,
+      place: 0,
+      color: colorTeam.red,
+    },
+  },
   count: scoreList.value.length,
   scores: scoreList.value,
 }));
@@ -281,7 +320,7 @@ const removeLastMatch = () => {
     results[teamPlays.teamGuest].ballsOut -= +matchStatistic.value.score[0];
     matchesList.value.pop();
     scoreList.value.pop();
-    debugger
+    debugger;
   }
 };
 
@@ -312,7 +351,7 @@ onBeforeMount(() => {
     const jsonResults = localStorage.getItem('results');
     matchesList.value = JSON.parse(jsonMatchesList);
     // debugger
-    results = JSON.parse(jsonResults);
+    results.team = JSON.parse(jsonResults);
   }
 });
 
@@ -320,7 +359,6 @@ watch(
   () => resultsState.value,
   (refreshData) => {
     console.log(refreshData);
-    console.log(localResults);
     const jsonMatchesList = JSON.stringify(matchesList.value);
     const jsonResults = JSON.stringify(results);
     localStorage.setItem('matchesList', jsonMatchesList);
