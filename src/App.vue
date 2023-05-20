@@ -3,6 +3,9 @@
     <h1 class="uppercase text-4xl font-bold text-center text-stone-400">
       Субботний футбол
     </h1>
+    <h3 v-if="!matchesList.length" class="w-content bg-red-700">
+      первую игру играют команды в манишках!!!
+    </h3>
     <TableScore :results="resultsState.team" />
     <div>
       <MatchesList
