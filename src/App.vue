@@ -310,16 +310,17 @@ const addMatch = (payload) => {
 // TODO:проблема с удалением
 const removeLastMatch = () => {
   if (confirm('Удалить матч?')) {
-  cancelMatch();
-  showButton.value = false;
-  (teamPlays.teamHost = matchesList.value.at(-1).teamHost),
-    (teamPlays.teamGuest = matchesList.value.at(-1).teamGuest),
-    (results[teamPlays.teamHost].ballsIn -= +matchStatistic.value.score[0]);
-  results[teamPlays.teamGuest].ballsIn -= +matchStatistic.value.score[2];
-  results[teamPlays.teamHost].ballsOut -= +matchStatistic.value.score[2];
-  results[teamPlays.teamGuest].ballsOut -= +matchStatistic.value.score[0];
-  matchesList.value.pop();
-  scoreList.value.pop();
+    cancelMatch();
+    showButton.value = false;
+    (teamPlays.teamHost = matchesList.value.at(-1).teamHost),
+      (teamPlays.teamGuest = matchesList.value.at(-1).teamGuest),
+      (results[teamPlays.teamHost].ballsIn -= +matchStatistic.value.score[0]);
+    results[teamPlays.teamGuest].ballsIn -= +matchStatistic.value.score[2];
+    results[teamPlays.teamHost].ballsOut -= +matchStatistic.value.score[2];
+    results[teamPlays.teamGuest].ballsOut -= +matchStatistic.value.score[0];
+    matchesList.value.pop();
+    scoreList.value.pop();
+    debugger;
   }
 };
 
