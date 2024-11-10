@@ -291,7 +291,7 @@ const addMatch = (payload) => {
 
       wonByPenalty.value = teamPlays.teamGuest;
     } else {
-      alert('Ну ты и дурак, вводи 1 или 2');
+      alert('нужно ввести какая команда победила, 1 или 2');
       firstDraw();
     }
 
