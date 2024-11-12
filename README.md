@@ -41,16 +41,3 @@ A Vue 3 project to manage football weekend events, built with modern tools and l
 - `npm run build`: Build the project for production.
 - `npm run preview`: Preview the built project.
 
-## License
-
-This project is private and not intended for public distribution.
-
-# TODO:
-[ ] - сделать коллапс (игры, мячи)
-[ ] - разобраться со временем в таблице
-[ ] - убрать обводку таблицы
-[ ] - почистить страничку(убрать лишние выводы)
-[ ] - стилизировать(цвет бекгранда, он команды)
-[ ] - закэшировать данные
-[ ] - дописать логику команд во второй игре после ничьи
-[ ] - добавить место
